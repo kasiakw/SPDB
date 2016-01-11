@@ -1,0 +1,65 @@
+1. punktowe: podaæ wszystkie obiekty, które zawieraj¹ dany punkt.
+
+//sprawdzenie dla punktu (6,3)
+//dla testów stworzenie czworok¹ta który zawiera ten punkt:
+//INSERT INTO COUNTRY_GEOM 
+//    VALUES 
+//    (44, MDSYS.SDO_GEOMETRY(2003, NULL,NULL,
+//    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1),
+//    MDSYS.SDO_ORDINATE_ARRAY(5,1, 8,1, 8,6, 5,7, 5,1)));
+
+SELECT gid
+FROM country_geom c 
+WHERE SDO_CONTAINS(c.geom, 
+	MDSYS.SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(6,3,0), NULL,NULL)) = 'TRUE'
+  ;
+
+2. przeciêcie: znaleŸæ obiekty, które maj¹ czêœæ wspóln¹ z danym odcinkiem/innym obiektem
+
+SELECT gid
+  FROM country_geom c 
+  where SDO_OVERLAPBDYINTERSECT(c.GEOM,
+  MDSYS.SDO_GEOMETRY(2003, NULL,NULL,
+    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1),
+    MDSYS.SDO_ORDINATE_ARRAY(4,4, 4,6, 6,6, 6,4, 4,4))) = 'TRUE'
+;
+
+3. zawieranie: podaæ wszystkie obiekty zawarte w danym obszarze (obszar: prostok¹t lub wiêkszy obiekt)
+
+SELECT gid
+  FROM country_geom c 
+  where SDO_RELATE(c.GEOM,
+  MDSYS.SDO_GEOMETRY(2003, NULL,NULL,
+    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1),
+    MDSYS.SDO_ORDINATE_ARRAY(4,0, 9,0, 9,9, 4,9, 4,01)),
+    'mask=INSIDE querytype=JOIN') = 'TRUE'
+;
+
+4. zapytania dotycz¹ce s¹siadów: 
+4.1 wyznaczanie k najbli¿szych s¹siadów
+4.2 podaæ wszystkie obiekty (okreœlonego typu) znajduj¹ce siê w zadanej odleg³oœci.
+
+SELECT gid
+  FROM country_geom c 
+  where SDO_WITHIN_DISTANCE(c.GEOM,
+  MDSYS.SDO_GEOMETRY(2003, NULL,NULL,
+    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1),
+    MDSYS.SDO_ORDINATE_ARRAY(10,1, 10,3, 12,3, 12,1, 10,1)),
+    'distance=3') = 'TRUE'
+;
+
+5. obliczanie pola obiektów
+
+SELECT c.gid, SDO_GEOM.sdo_area(c.GEOM, 1, '')
+  FROM country_geom c 
+;
+
+6. obliczanie odleg³oœci
+
+SELECT c.gid, ROUND(SDO_NN_DISTANCE(1)) DISTANCE
+  FROM country_geom c 
+  where SDO_NN(c.GEOM,
+  MDSYS.SDO_GEOMETRY(2003, NULL,NULL,
+    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1),
+    MDSYS.SDO_ORDINATE_ARRAY(10,1, 10,3, 12,3, 12,1, 10,1)),'sdo_num_res=10',1) = 'TRUE'
+;
