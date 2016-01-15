@@ -13,6 +13,15 @@ FROM country_geom c
 WHERE SDO_CONTAINS(c.geom, 
 	MDSYS.SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(6,3,0), NULL,NULL)) = 'TRUE'
   ;
+  
+SELECT gid
+FROM country_geom c 
+WHERE SDO_CONTAINS(c.geom, (SELECT point FROM city_geom p where p.gid = 10)) = 'TRUE';
+
+SELECT geom_nr
+FROM country
+WHERE zawiera_punkt(geom_nr, 10) = 1
+GROUP BY geom_nr;
 
 2. przeciêcie: znaleŸæ obiekty, które maj¹ czêœæ wspóln¹ z danym odcinkiem/innym obiektem
 

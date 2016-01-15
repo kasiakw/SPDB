@@ -1,10 +1,3 @@
-/*DROP TABLE COUNTRY_GEOM;
-DROP TABLE RIVER_GEOM;
-DROP TABLE CITY_GEOM;
-DROP TABLE COUNTRY;
-DROP TABLE RIVER;
-DROP TABLE CITY;*/
-
 CREATE TABLE COUNTRY_GEOM (
   gid NUMBER(5) PRIMARY KEY,
   geom SDO_GEOMETRY);
@@ -50,6 +43,19 @@ INSERT INTO USER_SDO_GEOM_METADATA VALUES ('RIVER_GEOM', 'LINE',
 INSERT INTO USER_SDO_GEOM_METADATA VALUES ('CITY_GEOM', 'POINT', 
   MDSYS.SDO_DIM_ARRAY(MDSYS.SDO_DIM_ELEMENT('X', 0, 300, 0.05),
                       MDSYS.SDO_DIM_ELEMENT('Y', 0, 300, 0.05)), NULL);
+                      
+/* Tworzenie R-tree indeksów przestrzennych (wymagane do zapytañ)*/
+CREATE INDEX country_geom_idx
+   ON country_geom(geom)
+   INDEXTYPE IS MDSYS.SPATIAL_INDEX;
+   
+CREATE INDEX river_geom_idx
+   ON river_geom(line)
+   INDEXTYPE IS MDSYS.SPATIAL_INDEX;
+   
+CREATE INDEX city_geom_idx
+   ON city_geom(point)
+   INDEXTYPE IS MDSYS.SPATIAL_INDEX;
 
 /*truncate table COUNTRY_GEOM;
 truncate table COUNTRY;
@@ -64,4 +70,23 @@ select * from CITY_GEOM;
 select * from RIVER;
 select * from RIVER_GEOM;
 select * from USER_SDO_GEOM_METADATA;*/
+
+SELECT gid
+FROM country_geom c 
+WHERE SDO_CONTAINS(c.geom, (SELECT point FROM city_geom p where p.gid = 10)) = 'TRUE';
+
+SELECT gid
+FROM country_geom c 
+WHERE SDO_CONTAINS(c.geom, 
+	MDSYS.SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(120,120,0), NULL,NULL)) = 'TRUE'
+  ;
+            
+SELECT geom_nr
+FROM country
+WHERE zawiera_punkt(geom_nr, 10) = 1
+GROUP BY geom_nr;
+
+
+
+
 
