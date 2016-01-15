@@ -57,18 +57,37 @@ CREATE INDEX city_geom_idx
    ON city_geom(point)
    INDEXTYPE IS MDSYS.SPATIAL_INDEX;
 
+CREATE INDEX country_geom_nr_idx ON country(geom_nr);
+-- Po du¿ym insercie nale¿y przebudowaæ indeks
+ALTER INDEX country_geom_nr_idx REBUILD;
+ALTER INDEX country_geom_idx REBUILD;
+ALTER INDEX river_geom_idx REBUILD;
+ALTER INDEX city_geom_idx REBUILD;
+
+/* Po du¿ym insercie dobrze jest te¿ uaktualniæ statystyki */
+EXEC DBMS_STATS.gather_table_stats('SYSTEM', 'COUNTRY_GEOM');
+EXEC DBMS_STATS.gather_table_stats('SYSTEM', 'RIVER_GEOM');
+EXEC DBMS_STATS.gather_table_stats('SYSTEM', 'CITY_GEOM');
+EXEC DBMS_STATS.gather_table_stats('SYSTEM', 'COUNTRY');
+EXEC DBMS_STATS.gather_table_stats('SYSTEM', 'RIVER');
+EXEC DBMS_STATS.gather_table_stats('SYSTEM', 'CITY');
+
+/* aby zobaczyc explain plan dla wybranego zapytania */ 
+explain plan for 
+SELECT geom_nr
+FROM country
+WHERE zawiera_punkt(geom_nr, 10) = 1
+GROUP BY geom_nr;
+
+select * from table(dbms_xplan.display);
+
 /*truncate table COUNTRY_GEOM;
 truncate table COUNTRY;
 truncate table RIVER_GEOM;
 truncate table RIVER;
 truncate table CITY_GEOM;
 truncate table CITY;
-select geom from COUNTRY_GEOM;
-select * from COUNTRY;
-select * from CITY;
-select * from CITY_GEOM;
-select * from RIVER;
-select * from RIVER_GEOM;
+drop index country_geom_nr_idx;
 select * from USER_SDO_GEOM_METADATA;*/
 
 SELECT gid
@@ -85,6 +104,9 @@ SELECT geom_nr
 FROM country
 WHERE zawiera_punkt(geom_nr, 10) = 1
 GROUP BY geom_nr;
+
+
+
 
 
 
