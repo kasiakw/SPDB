@@ -24,7 +24,7 @@ public class Polaczenie {
 		  "WHERE SDO_CONTAINS(c.geom, (SELECT point FROM system.city_geom p where p.gid = 10)) = 'TRUE'";
   String s_query2 = "SELECT COUNT(*) FROM system.country_geom";
   
-  String query1 = "SELECT geom_nr FROM system.country WHERE zawiera_punkt(geom_nr, 10) = 1 " +
+  String query1 = "SELECT geom_nr FROM system.country WHERE system.zawiera_punkt(geom_nr, 10) = 1 " +
 		  "GROUP BY geom_nr";
   try
    {
@@ -57,7 +57,7 @@ public class Polaczenie {
           stm.executeUpdate(shared);
           
           test(stm, s_query1, zapis);
-          //test(stm, query1, zapis);               
+          test(stm, query1, zapis);               
     	  conn.commit();
 	  }
 	  catch (SQLException ex) { 
