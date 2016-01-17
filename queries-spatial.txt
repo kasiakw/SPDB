@@ -34,6 +34,7 @@ SELECT gid
 ;
 
 3. zawieranie: podaæ wszystkie obiekty zawarte w danym obszarze (obszar: prostok¹t lub wiêkszy obiekt)
+CONTAINS if the second object is entirely within the first object and the object boundaries do not touch; otherwise, returns FALSE.
 
 SELECT gid
   FROM country_geom c 
@@ -41,8 +42,26 @@ SELECT gid
   MDSYS.SDO_GEOMETRY(2003, NULL,NULL,
     MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1),
     MDSYS.SDO_ORDINATE_ARRAY(4,0, 9,0, 9,9, 4,9, 4,01)),
-    'mask=INSIDE querytype=JOIN') = 'TRUE'
+    'mask=CONTAINS') = 'TRUE'
 ;
+
+SELECT b.gid
+FROM country_geom a, country_geom b
+WHERE SDO_RELATE(a.geom, b.geom, 'mask=CONTAINS') = 'TRUE';
+
+SELECT b.geom_nr
+FROM country a, country b
+WHERE zawiera_obiekt(a.geom_nr, b.geom_nr, 1) = 1
+GROUP BY b.geom_nr;
+
+SELECT r.gid
+FROM country c, river r
+WHERE zawiera_obiekt(c.geom_nr, r.gid, 1) = 1
+GROUP BY r.gid;
+
+SELECT r.gid
+FROM country_geom c, river_geom r
+WHERE SDO_RELATE(c.geom, r.line, 'mask=CONTAINS') = 'TRUE';
 
 4. zapytania dotycz¹ce s¹siadów: 
 4.1 wyznaczanie k najbli¿szych s¹siadów
@@ -62,6 +81,15 @@ SELECT gid
 SELECT c.gid, SDO_GEOM.sdo_area(c.GEOM, 1, '')
   FROM country_geom c 
 ;
+
+SELECT SDO_GEOM.sdo_area(geom, 1, '') 
+  FROM system.country_geom 
+  WHERE gid = 9;
+
+SELECT geom_nr, system.pole_figury(geom_nr)  
+  FROM system.country 
+  WHERE geom_nr = 9
+  GROUP BY geom_nr;
 
 6. obliczanie odleg³oœci
 

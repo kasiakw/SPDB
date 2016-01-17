@@ -90,25 +90,6 @@ truncate table CITY;
 drop index country_geom_nr_idx;
 select * from USER_SDO_GEOM_METADATA;*/
 
-SELECT gid
-FROM country_geom c 
-WHERE SDO_CONTAINS(c.geom, (SELECT point FROM city_geom p where p.gid = 7)) = 'TRUE';
-
-SELECT gid
-FROM country_geom c 
-WHERE SDO_CONTAINS(c.geom, 
-	MDSYS.SDO_GEOMETRY(2001, NULL, SDO_POINT_TYPE(120,120,0), NULL,NULL)) = 'TRUE'
-  ;
-            
-SELECT geom_nr
-FROM country
-WHERE zawiera_punkt(geom_nr, 7) = 1
-GROUP BY geom_nr;
-
-/* zwraca liczbe wierzcholkow kolejnych wielokatow */
-select count(*) from country group by geom_nr;
-
-
 
 
 

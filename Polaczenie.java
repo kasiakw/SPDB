@@ -19,13 +19,44 @@ public class Polaczenie {
   String buffer	= "ALTER SYSTEM FLUSH BUFFER_CACHE";
   String shared = "ALTER SYSTEM FLUSH SHARED_POOL";
 
-  //dodalam do nazw tabel przedrostki system., bo u mnie siê znajduja w schemacie system
+  //zawieranie punktu
+  // TODO: zmieniæ p.gid na wy¿szy (mozliwe do zrobienia dopiero po wiekszym insercie)
   String s_query1 = "SELECT gid FROM system.country_geom c " + 
 		  "WHERE SDO_CONTAINS(c.geom, (SELECT point FROM system.city_geom p where p.gid = 10)) = 'TRUE'";
-  String s_query2 = "SELECT COUNT(*) FROM system.country_geom";
-  
   String query1 = "SELECT geom_nr FROM system.country WHERE system.zawiera_punkt(geom_nr, 10) = 1 " +
 		  "GROUP BY geom_nr";
+  
+  //przeciecie: zwraca obiekty majace czesc wspolna z danym
+  String s_query2 = "";
+  String query2 = "";
+  
+  //zawieranie odcinka: zwraca odcinki zawarte w danym wielokacie
+  String s_query30 = "SELECT r.gid FROM system.country_geom c, system.river_geom r " +
+		  "WHERE SDO_RELATE(c.geom, r.line, 'mask=CONTAINS') = 'TRUE'";
+  String query30 = "SELECT r.gid FROM system.country c, system.river r " +
+		  "WHERE system.zawiera_obiekt(c.geom_nr, r.gid, 1) = 1 GROUP BY r.gid";
+  
+  //zawieranie wielokata: zwraca wielokaty zawarte w danym wielokacie 
+  String s_query31 = "SELECT b.gid FROM system.country_geom a, system.country_geom b " +
+		  "WHERE SDO_RELATE(a.geom, b.geom, 'mask=CONTAINS') = 'TRUE'";
+  String query31 = "SELECT b.geom_nr FROM system.country a, system.country b " +
+		  "WHERE system.zawiera_obiekt(a.geom_nr, b.geom_nr, 1) = 1 GROUP BY b.geom_nr";
+  
+  //zwracanie k-najblizszych sasiadow
+  String s_query4 = "";
+  String query4 = "";
+  
+  //obliczanie pola wybranego wielokata
+  // TODO: zmieniæ gid na wy¿szy (mozliwe do zrobienia dopiero po wiekszym insercie)
+  String s_query5 = "SELECT SDO_GEOM.sdo_area(geom, 1, '') FROM system.country_geom WHERE gid = 9";
+  String query5 = "SELECT geom_nr, system.pole_figury(geom_nr)  FROM system.country WHERE geom_nr = 9 " + 
+		  "GROUP BY geom_nr";
+  
+  //obliczanie odleglosci
+  String s_query6 = "";
+  String query6 = "";
+  
+
   try
    {
 	  DriverManager.registerDriver(new oracle.jdbc.driver.OracleDriver());
@@ -57,7 +88,19 @@ public class Polaczenie {
           stm.executeUpdate(shared);
           
           test(stm, s_query1, zapis);
-          test(stm, query1, zapis);               
+          test(stm, query1, zapis);
+          //test(stm, s_query2, zapis);
+          //test(stm, query2, zapis);
+          test(stm, s_query30, zapis);
+          test(stm, query30, zapis);
+          test(stm, s_query31, zapis);
+          test(stm, query31, zapis);
+          //test(stm, s_query4, zapis);
+          //test(stm, query4, zapis);
+          test(stm, s_query5, zapis);
+          test(stm, query5, zapis);
+          //test(stm, s_query6, zapis);
+          //test(stm, query6, zapis); 
     	  conn.commit();
 	  }
 	  catch (SQLException ex) { 
