@@ -92,7 +92,7 @@ select * from USER_SDO_GEOM_METADATA;*/
 
 SELECT gid
 FROM country_geom c 
-WHERE SDO_CONTAINS(c.geom, (SELECT point FROM city_geom p where p.gid = 10)) = 'TRUE';
+WHERE SDO_CONTAINS(c.geom, (SELECT point FROM city_geom p where p.gid = 7)) = 'TRUE';
 
 SELECT gid
 FROM country_geom c 
@@ -102,8 +102,11 @@ WHERE SDO_CONTAINS(c.geom,
             
 SELECT geom_nr
 FROM country
-WHERE zawiera_punkt(geom_nr, 10) = 1
+WHERE zawiera_punkt(geom_nr, 7) = 1
 GROUP BY geom_nr;
+
+/* zwraca liczbe wierzcholkow kolejnych wielokatow */
+select count(*) from country group by geom_nr;
 
 
 

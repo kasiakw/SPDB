@@ -1,7 +1,7 @@
 SET SERVEROUTPUT ON
 DECLARE
 /* wielokat jest budowany na elipsie o srodku (x, y) i promieniach rx i ry */
-/* losowa liczba wierzcholkow wielokata (counterclockwise) */
+/* liczba wierzcholkow wielokata 3,4 lub 5 */
  x0 NUMBER(5,2);
  y0 NUMBER(5,2);
  rx NUMBER(5,2);
@@ -37,14 +37,21 @@ BEGIN
       coord_array(ind+1) := x_coor;
       coord_array(ind+2) := y_coor;
       ind := ind + 2;
-      /*DBMS_OUTPUT.put_line('i=' || i || ' : value=' || DBMS_RANDOM.value(0, 1) || ' k=' || k);*/
-      /* losowy skok o <20; 70) stopni */
-      k := k + (20.0 + 50.0*dbms_random.value(0, 1)) * pi/180;
+      DBMS_OUTPUT.put_line('i=' || i || ' : value=' || DBMS_RANDOM.value(0, 1) || ' k=' || k);
+      /* losowy skok o <55; 150) stopni */
+      k := k + (55.0 + 95.0*dbms_random.value(0, 1)) * pi/180;
+      EXIT WHEN n > 5; --jesli wiecej niz 5 wierzcholkow
       INSERT INTO COUNTRY
       (gid, point_nr, geom_nr, x, y)
       VALUES
       (country_id, n, i, x_coor, y_coor);
     END LOOP;
+    IF n < 3 THEN
+      DBMS_OUTPUT.PUT_LINE('ZA MALA LICZBA WIERZCHOLKOW');
+      execute immediate 'truncate table COUNTRY_GEOM';
+      execute immediate 'truncate table COUNTRY';
+      RETURN;
+    END IF;
     /* pierwszy punkt to te¿ ostatni dla wielokata w SDO_GEOMETRY */
     coord_array.Extend(2);
     coord_array(ind+1) := coord_array(1);
