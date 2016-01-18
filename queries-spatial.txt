@@ -65,6 +65,18 @@ WHERE SDO_RELATE(c.geom, r.line, 'mask=CONTAINS') = 'TRUE';
 
 4. zapytania dotycz¹ce s¹siadów: 
 4.1 wyznaczanie k najbli¿szych s¹siadów
+
+SELECT * FROM (
+  SELECT c1.gid, ROUND(SDO_NN_DISTANCE(1)) DISTANCE
+  FROM country_geom c1 , country_geom c2
+  where c2.gid = 1
+    AND c1.gid != 1
+    AND SDO_NN(c1.geom, c2.geom,'sdo_num_res=10',1) = 'TRUE'
+  order by DISTANCE asc
+  )
+  where ROWNUM <=5
+;
+
 4.2 podaæ wszystkie obiekty (okreœlonego typu) znajduj¹ce siê w zadanej odleg³oœci.
 
 SELECT gid
