@@ -1,3 +1,5 @@
+/* oblicza odleglosci pomiedzy wszystkimi odcinkami figury 1 a wszystkimi punktami figury 2, zwraca najmniejsz¹ odeglosc*/
+
 CREATE OR REPLACE FUNCTION odleglosc_czesc
    (g1_nr IN NUMBER, g2_nr IN NUMBER)
     RETURN NUMBER 
@@ -16,7 +18,6 @@ CREATE OR REPLACE FUNCTION odleglosc_czesc
     yL NUMBER(5,2);
     x0 NUMBER(5,2);
     y0 NUMBER(5,2);
-    
     x1 NUMBER(5,2);
     x2 NUMBER(5,2);
     y1 NUMBER(5,2);
@@ -73,9 +74,11 @@ BEGIN
             
             /*DBMS_OUTPUT.PUT_LINE( (ABS( aa*x0 - y0 + bb ) / ( SQRT( aa*aa + 1) ) ) ); */
             
+			/*najblizszy punkt znajduje sie na prostej wyznaczanej przez odcinek AB ale jest poza granicami samego odcinka */
             IF ( dotproduct < 0 ) OR
                  dotproduct > ( POWER(x2-x1,2) + POWER(y2-y1, 2) )
             THEN
+			/* w takiej sytuacji zamiast wyliczonej wczesniej odleglosci bierzemy odleglosc do pktu A lub B (pkt graniczne odcinka) - zaleznie ktory jest blizej  */
               dist := SQRT(POWER(x0 - x1,2) + POWER(y0 - y1, 2));
               if( dist > SQRT(POWER(x0 - x2,2) + POWER(y0 - y2, 2)) ) 
               then 
