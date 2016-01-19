@@ -28,7 +28,7 @@ public class Polaczenie {
   //przeciecie: zwraca obiekty majace czesc wspolna z danym
   String s_query2 = "SELECT a.gid FROM system.country_geom a " +
 		  "WHERE SDO_OVERLAPBDYINTERSECT(a.geom, (SELECT b.geom FROM system.country_geom b where b.gid = 1000)) = 'TRUE'";
-  String query2 = "SELECT geom_nr FROM system.country WHERE system.przeciecie(geom_nr, 1000, 1) = 1 " +
+  String query2 = "SELECT geom_nr FROM system.country WHERE system.przeciecie(geom_nr, 1000) = 1 " +
 		  "GROUP BY geom_nr";
   
   //zawieranie odcinka: zwraca odcinki zawarte w danym wielokacie
@@ -137,6 +137,26 @@ public class Polaczenie {
 	  e.printStackTrace();
   }
  }
+ 
+private void test(Statement stm, String query, PrintWriter zapis) throws Exception
+{
+	  long start = System.currentTimeMillis(); 
+	  ResultSet res = stm.executeQuery(query);
+	  long time = System.currentTimeMillis() - start;
+
+	  res.close();
+	  System.out.println("Czas: " + time + " ms dla zapytania " + query + ";");
+      zapis.println("Czas: " + time + " ms dla zapytania " + query + ";" + '\n');
+	
+}
+ 
+public static void main(String[] args){
+  Polaczenie oracle =new Polaczenie();
+  oracle.polaczenie_z_baza();  
+}
+}
+
+
  
 private void test(Statement stm, String query, PrintWriter zapis) throws Exception
 {
