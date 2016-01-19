@@ -63,6 +63,15 @@ public class Polaczenie {
   String query6 = "SELECT c.geom_nr, system.odleglosc(1000, geom_nr) " +
                 "  FROM system.country c ";
   
+  
+          String s_query7 = "SELECT c1.gid, c2.gid " +
+                "  FROM system.country_geom c1, system.country_geom c2 " +
+                "  where c1.gid = 1 AND SDO_WITHIN_DISTANCE(c1.GEOM, c2.GEOM, " +
+                "    'distance=10') = 'TRUE'";
+
+        String query7 = "SELECT unique c.geom_nr " +
+                "    FROM system.country c " +
+                "    where system.odleglosc(1, geom_nr) < 10";
 
   try
    {
@@ -108,6 +117,8 @@ public class Polaczenie {
           test(stm, query5, zapis);
           test(stm, s_query6, zapis);
           test(stm, query6, zapis); 
+		  test(stm, s_query7, zapis);
+          test(stm, query7, zapis);s
     	  conn.commit();
 	  }
 	  catch (SQLException ex) { 
