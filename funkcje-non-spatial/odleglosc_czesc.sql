@@ -12,8 +12,8 @@ CREATE OR REPLACE FUNCTION odleglosc_czesc
     
     dist NUMBER(8,2);
     smallest_dist NUMBER(8,2);
-    aa NUMBER(8,2);
-    bb NUMBER(8,2);
+    aa NUMBER;
+    bb NUMBER;
     xL NUMBER(5,2);
     yL NUMBER(5,2);
     x0 NUMBER(5,2);
@@ -53,7 +53,9 @@ BEGIN
             x0 := x2_coords(i);
             y0 := y2_coords(i);
             
+            if x2 = x1 then aa := 0; else
             aa := (y2 - y1) / (x2 - x1);
+            end if;
             bb := y1 - aa * x1;
             
             xL := ( x0 + aa*y0 - aa*bb ) / ( aa*aa + 1 );
