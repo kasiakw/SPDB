@@ -53,8 +53,12 @@ public class Polaczenie {
 		  "GROUP BY geom_nr";
   
   //obliczanie odleglosci
-  String s_query6 = "";
-  String query6 = "";
+  String s_query6 = "SELECT c.gid, SDO_NN_DISTANCE(1) " +
+                "  FROM system.country_geom c , system.country_geom c2 " +
+                "  where c2.gid = 1 " +
+                "  AND SDO_NN(c.GEOM, c2.GEOM,'sdo_num_res=10',1) = 'TRUE' ";
+  String query6 = "SELECT c.geom_nr, system.odleglosc(1, geom_nr) " +
+                "  FROM system.country c ";
   
 
   try
