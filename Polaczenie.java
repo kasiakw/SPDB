@@ -48,7 +48,7 @@ public class Polaczenie {
 		  "FROM system.country_geom c1 , system.country_geom c2 where c2.gid = 1000 AND c1.gid != 1000 " +
 		  "AND SDO_NN(c1.geom, c2.geom,'sdo_num_res=10',1) = 'TRUE' ORDER BY DISTANCE asc) where ROWNUM <=5";
   String query4 = "SELECT * FROM (SELECT unique c.geom_nr, system.odleglosc(1000, geom_nr) " +
-		  "FROM country c WHERE geom_nr != 1000 ORDER BY system.odleglosc(1000, geom_nr) asc)  where ROWNUM <= 5;";
+		  "FROM system.country c WHERE geom_nr != 1000 ORDER BY system.odleglosc(1000, geom_nr) asc)  where ROWNUM <= 5";
   
   //obliczanie pola wybranego wielokata
   String s_query5 = "SELECT SDO_GEOM.sdo_area(geom, 1, '') FROM system.country_geom WHERE gid = 1000";
