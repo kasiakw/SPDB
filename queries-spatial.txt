@@ -25,13 +25,14 @@ GROUP BY geom_nr;
 
 2. przeciêcie: znaleŸæ obiekty, które maj¹ czêœæ wspóln¹ z danym odcinkiem/innym obiektem
 
-SELECT gid
-  FROM country_geom c 
-  where SDO_OVERLAPBDYINTERSECT(c.GEOM,
-  MDSYS.SDO_GEOMETRY(2003, NULL,NULL,
-    MDSYS.SDO_ELEM_INFO_ARRAY(1,1003,1),
-    MDSYS.SDO_ORDINATE_ARRAY(4,4, 4,6, 6,6, 6,4, 4,4))) = 'TRUE'
-;
+SELECT a.gid
+FROM country_geom a
+WHERE SDO_OVERLAPBDYINTERSECT(a.geom, (SELECT b.geom FROM country_geom b where b.gid = 1000)) = 'TRUE';
+
+SELECT geom_nr
+FROM country 
+WHERE przeciecie(geom_nr, 1000) = 1
+GROUP BY geom_nr;
 
 3. zawieranie: podaæ wszystkie obiekty zawarte w danym obszarze (obszar: prostok¹t lub wiêkszy obiekt)
 CONTAINS if the second object is entirely within the first object and the object boundaries do not touch; otherwise, returns FALSE.

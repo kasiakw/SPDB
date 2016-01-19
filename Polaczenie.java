@@ -20,15 +20,16 @@ public class Polaczenie {
   String shared = "ALTER SYSTEM FLUSH SHARED_POOL";
 
   //zawieranie punktu
-  // TODO: zmieniæ p.gid na wy¿szy (mozliwe do zrobienia dopiero po wiekszym insercie)
   String s_query1 = "SELECT gid FROM system.country_geom c " + 
-		  "WHERE SDO_CONTAINS(c.geom, (SELECT point FROM system.city_geom p where p.gid = 10)) = 'TRUE'";
-  String query1 = "SELECT geom_nr FROM system.country WHERE system.zawiera_punkt(geom_nr, 10) = 1 " +
+		  "WHERE SDO_CONTAINS(c.geom, (SELECT point FROM system.city_geom p where p.gid = 1000)) = 'TRUE'";
+  String query1 = "SELECT geom_nr FROM system.country WHERE system.zawiera_punkt(geom_nr, 1000) = 1 " +
 		  "GROUP BY geom_nr";
   
   //przeciecie: zwraca obiekty majace czesc wspolna z danym
-  String s_query2 = "";
-  String query2 = "";
+  String s_query2 = "SELECT a.gid FROM system.country_geom a " +
+		  "WHERE SDO_OVERLAPBDYINTERSECT(a.geom, (SELECT b.geom FROM system.country_geom b where b.gid = 1000)) = 'TRUE'";
+  String query2 = "SELECT geom_nr FROM system.country WHERE system.przeciecie(geom_nr, 1000, 1) = 1 " +
+		  "GROUP BY geom_nr";
   
   //zawieranie odcinka: zwraca odcinki zawarte w danym wielokacie
   String s_query30 = "SELECT r.gid FROM system.country_geom c, system.river_geom r " +
@@ -42,22 +43,24 @@ public class Polaczenie {
   String query31 = "SELECT b.geom_nr FROM system.country a, system.country b " +
 		  "WHERE system.zawiera_obiekt(a.geom_nr, b.geom_nr, 1) = 1 GROUP BY b.geom_nr";
   
-  //zwracanie k-najblizszych sasiadow
-  String s_query4 = "";
-  String query4 = "";
+  //zwracanie k-najblizszych (5) sasiadow
+  String s_query4 = "SELECT * FROM (SELECT c1.gid, ROUND(SDO_NN_DISTANCE(1)) DISTANCE " +
+		  "FROM system.country_geom c1 , system.country_geom c2 where c2.gid = 1000 AND c1.gid != 1000 " +
+		  "AND SDO_NN(c1.geom, c2.geom,'sdo_num_res=10',1) = 'TRUE' ORDER BY DISTANCE asc) where ROWNUM <=5";
+  String query4 = "SELECT * FROM (SELECT unique c.geom_nr, system.odleglosc(1000, geom_nr) " +
+		  "FROM country c WHERE geom_nr != 1000 ORDER BY system.odleglosc(1000, geom_nr) asc)  where ROWNUM <= 5;";
   
   //obliczanie pola wybranego wielokata
-  // TODO: zmieniæ gid na wy¿szy (mozliwe do zrobienia dopiero po wiekszym insercie)
-  String s_query5 = "SELECT SDO_GEOM.sdo_area(geom, 1, '') FROM system.country_geom WHERE gid = 9";
-  String query5 = "SELECT geom_nr, system.pole_figury(geom_nr)  FROM system.country WHERE geom_nr = 9 " + 
+  String s_query5 = "SELECT SDO_GEOM.sdo_area(geom, 1, '') FROM system.country_geom WHERE gid = 1000";
+  String query5 = "SELECT geom_nr, system.pole_figury(geom_nr)  FROM system.country WHERE geom_nr = 1000 " + 
 		  "GROUP BY geom_nr";
   
   //obliczanie odleglosci
   String s_query6 = "SELECT c.gid, SDO_NN_DISTANCE(1) " +
                 "  FROM system.country_geom c , system.country_geom c2 " +
-                "  where c2.gid = 1 " +
+                "  where c2.gid = 1000 " +
                 "  AND SDO_NN(c.GEOM, c2.GEOM,'sdo_num_res=10',1) = 'TRUE' ";
-  String query6 = "SELECT c.geom_nr, system.odleglosc(1, geom_nr) " +
+  String query6 = "SELECT c.geom_nr, system.odleglosc(1000, geom_nr) " +
                 "  FROM system.country c ";
   
 
@@ -93,18 +96,18 @@ public class Polaczenie {
           
           test(stm, s_query1, zapis);
           test(stm, query1, zapis);
-          //test(stm, s_query2, zapis);
-          //test(stm, query2, zapis);
+          test(stm, s_query2, zapis);
+          test(stm, query2, zapis);
           test(stm, s_query30, zapis);
           test(stm, query30, zapis);
           test(stm, s_query31, zapis);
           test(stm, query31, zapis);
-          //test(stm, s_query4, zapis);
-          //test(stm, query4, zapis);
+          test(stm, s_query4, zapis);
+          test(stm, query4, zapis);
           test(stm, s_query5, zapis);
           test(stm, query5, zapis);
-          //test(stm, s_query6, zapis);
-          //test(stm, query6, zapis); 
+          test(stm, s_query6, zapis);
+          test(stm, query6, zapis); 
     	  conn.commit();
 	  }
 	  catch (SQLException ex) { 

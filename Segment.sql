@@ -6,7 +6,7 @@ DECLARE
  endY NUMBER(5,2);
 BEGIN
   dbms_random.initialize(681457888);
-  FOR i IN 1 .. 10 LOOP
+  FOR i IN 1 .. 50000 LOOP
     startX := ROUND(dbms_random.value(0, 200),2);
     startY := ROUND(dbms_random.value(0, 200),2);
     endX := ROUND(dbms_random.value(0, 200),2);

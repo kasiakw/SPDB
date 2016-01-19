@@ -7,7 +7,7 @@ DECLARE
  rx NUMBER(5,2);
  ry NUMBER(5,2);
  n NUMBER(2); 
- country_id NUMBER(5);
+ country_id NUMBER;
  coord_array MDSYS.SDO_ORDINATE_ARRAY := MDSYS.SDO_ORDINATE_ARRAY();
  x_coor NUMBER(5,2);
  y_coor NUMBER(5,2);
@@ -17,7 +17,7 @@ DECLARE
 BEGIN
   dbms_random.initialize(681457802);
   country_id := 0;
-  FOR i IN 1 .. 10 LOOP
+  FOR i IN 1 .. 50000 LOOP
     n := 0; -- liczba wierzcholkow 
     x0 := ROUND(dbms_random.value(100, 200),2);
     y0 := ROUND(dbms_random.value(100, 200),2);
@@ -37,7 +37,7 @@ BEGIN
       coord_array(ind+1) := x_coor;
       coord_array(ind+2) := y_coor;
       ind := ind + 2;
-      DBMS_OUTPUT.put_line('i=' || i || ' : value=' || DBMS_RANDOM.value(0, 1) || ' k=' || k);
+      -- DBMS_OUTPUT.put_line('i=' || i || ' : value=' || DBMS_RANDOM.value(0, 1) || ' k=' || k);
       /* losowy skok o <55; 150) stopni */
       k := k + (55.0 + 95.0*dbms_random.value(0, 1)) * pi/180;
       EXIT WHEN n > 5; --jesli wiecej niz 5 wierzcholkow
