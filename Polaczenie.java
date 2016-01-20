@@ -34,21 +34,20 @@ public class Polaczenie {
   //zawieranie odcinka: zwraca odcinki zawarte w danym wielokacie
   String s_query30 = "SELECT r.gid FROM system.country_geom c, system.river_geom r " +
 		  "WHERE SDO_RELATE(c.geom, r.line, 'mask=CONTAINS') = 'TRUE'";
-  String query30 = "SELECT r.gid FROM system.country c, system.river r " +
-		  "WHERE system.zawiera_obiekt(c.geom_nr, r.gid, 1) = 1 GROUP BY r.gid";
+  String query30 = "SELECT r.gid FROM system.river r WHERE system.zawiera_odcinek(1000, r.gid) = 1";
   
   //zawieranie wielokata: zwraca wielokaty zawarte w danym wielokacie 
   String s_query31 = "SELECT b.gid FROM system.country_geom a, system.country_geom b " +
 		  "WHERE SDO_RELATE(a.geom, b.geom, 'mask=CONTAINS') = 'TRUE'";
-  String query31 = "SELECT b.geom_nr FROM system.country a, system.country b " +
-		  "WHERE system.zawiera_obiekt(a.geom_nr, b.geom_nr, 1) = 1 GROUP BY b.geom_nr";
+  String query31 = "SELECT r.geom_nr FROM system.country r " +
+		  		"WHERE system.zawiera_wielokat(1000, r.geom_nr) = 1 GROUP BY r.geom_nr";
   
   //zwracanie k-najblizszych (5) sasiadow
   String s_query4 = "SELECT * FROM (SELECT c1.gid, ROUND(SDO_NN_DISTANCE(1)) DISTANCE " +
 		  "FROM system.country_geom c1 , system.country_geom c2 where c2.gid = 1000 AND c1.gid != 1000 " +
 		  "AND SDO_NN(c1.geom, c2.geom,'sdo_num_res=10',1) = 'TRUE' ORDER BY DISTANCE asc) where ROWNUM <=5";
   String query4 = "SELECT * FROM (SELECT unique c.geom_nr, system.odleglosc(1000, geom_nr) " +
-		  "FROM system.country c WHERE geom_nr != 1000 ORDER BY system.odleglosc(1000, geom_nr) asc)  where ROWNUM <= 5";
+		  "FROM country c WHERE geom_nr != 1000 ORDER BY system.odleglosc(1000, geom_nr) asc)  where ROWNUM <= 5;";
   
   //obliczanie pola wybranego wielokata
   String s_query5 = "SELECT SDO_GEOM.sdo_area(geom, 1, '') FROM system.country_geom WHERE gid = 1000";
@@ -57,21 +56,21 @@ public class Polaczenie {
   
   //obliczanie odleglosci
   String s_query6 = "SELECT c.gid, SDO_NN_DISTANCE(1) " +
-                "  FROM system.country_geom c , system.country_geom c2 " +
-                "  where c2.gid = 1000 " +
-                "  AND SDO_NN(c.GEOM, c2.GEOM,'sdo_num_res=10',1) = 'TRUE' ";
+           "  FROM system.country_geom c , system.country_geom c2 " +
+           "  where c2.gid = 1000 " +
+           "  AND SDO_NN(c.GEOM, c2.GEOM,'sdo_num_res=10',1) = 'TRUE' ";
   String query6 = "SELECT c.geom_nr, system.odleglosc(1000, geom_nr) " +
-                "  FROM system.country c ";
+           "  FROM system.country c ";
   
   
-          String s_query7 = "SELECT c1.gid, c2.gid " +
-                "  FROM system.country_geom c1, system.country_geom c2 " +
-                "  where c1.gid = 1 AND SDO_WITHIN_DISTANCE(c1.GEOM, c2.GEOM, " +
-                "    'distance=10') = 'TRUE'";
+  String s_query7 = "SELECT c1.gid, c2.gid " +
+           "  FROM system.country_geom c1, system.country_geom c2 " +
+           "  where c1.gid = 1 AND SDO_WITHIN_DISTANCE(c1.GEOM, c2.GEOM, " +
+           "    'distance=10') = 'TRUE'";
 
-        String query7 = "SELECT unique c.geom_nr " +
-                "    FROM system.country c " +
-                "    where system.odleglosc(1, geom_nr) < 10";
+  String query7 = "SELECT unique c.geom_nr " +
+          "    FROM system.country c " +
+          "    where system.odleglosc(1, geom_nr) < 10";
 
   try
    {
@@ -118,7 +117,7 @@ public class Polaczenie {
           test(stm, s_query6, zapis);
           test(stm, query6, zapis); 
 		  test(stm, s_query7, zapis);
-          test(stm, query7, zapis);s
+          test(stm, query7, zapis);
     	  conn.commit();
 	  }
 	  catch (SQLException ex) { 
@@ -166,24 +165,3 @@ public static void main(String[] args){
   oracle.polaczenie_z_baza();  
 }
 }
-
-
- 
-private void test(Statement stm, String query, PrintWriter zapis) throws Exception
-{
-	  long start = System.currentTimeMillis(); 
-	  ResultSet res = stm.executeQuery(query);
-	  long time = System.currentTimeMillis() - start;
-
-	  res.close();
-	  System.out.println("Czas: " + time + " ms dla zapytania " + query + ";");
-      zapis.println("Czas: " + time + " ms dla zapytania " + query + ";" + '\n');
-	
-}
- 
-public static void main(String[] args){
-  Polaczenie oracle =new Polaczenie();
-  oracle.polaczenie_z_baza();  
-}
-}
-
