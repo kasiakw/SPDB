@@ -101,7 +101,7 @@ BEGIN
 END;
 
 
-
+/*
 select *
 from   user_errors ur
-where  ur.name = 'ODLEGLOSC_CZESC';
+where  ur.name = 'ODLEGLOSC_CZESC'; */
