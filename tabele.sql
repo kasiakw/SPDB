@@ -13,7 +13,6 @@ CREATE TABLE CITY_GEOM (
 CREATE TABLE COUNTRY(
   gid NUMBER PRIMARY KEY,
   geom_nr NUMBER(5),  /* okresla wielokat do którego nalezy punkt */
-  point_nr NUMBER(2), /* okresla kolejnosc wierzcholkow w wielokacie (liczac od 1) */
   x NUMBER(5,2),
   y NUMBER(5,2));
 
@@ -45,6 +44,7 @@ INSERT INTO USER_SDO_GEOM_METADATA VALUES ('CITY_GEOM', 'POINT',
                       MDSYS.SDO_DIM_ELEMENT('Y', 0, 300, 0.05)), NULL);
                       
 /* Tworzenie R-tree indeksów przestrzennych (wymagane do zapytañ)*/
+
 CREATE INDEX country_geom_idx
    ON country_geom(geom)
    INDEXTYPE IS MDSYS.SPATIAL_INDEX;
@@ -63,6 +63,7 @@ ALTER INDEX country_geom_nr_idx REBUILD;
 ALTER INDEX country_geom_idx REBUILD;
 ALTER INDEX river_geom_idx REBUILD;
 ALTER INDEX city_geom_idx REBUILD;
+ALTER INDEX country_geom_nr_idx REBUILD;
 
 /* Po du¿ym insercie dobrze jest te¿ uaktualniæ statystyki */
 EXEC DBMS_STATS.gather_table_stats('SYSTEM', 'COUNTRY_GEOM');
@@ -87,8 +88,8 @@ truncate table RIVER_GEOM;
 truncate table RIVER;
 truncate table CITY_GEOM;
 truncate table CITY;
-drop index country_geom_nr_idx;
-select * from USER_SDO_GEOM_METADATA;*/
+*/
+
 
 
 

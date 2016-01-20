@@ -15,9 +15,10 @@ DECLARE
  ind NUMBER(3);
  pi NUMBER := 3.14159265359;
 BEGIN
-  dbms_random.initialize(681457802);
+  dbms_random.initialize(681457802); -- I zestaw danych
+  -- dbms_random.initialize(867234567); -- II zestaw danych
   country_id := 0;
-  FOR i IN 1 .. 50000 LOOP
+  FOR i IN 1 .. 10 LOOP
     n := 0; -- liczba wierzcholkow 
     x0 := ROUND(dbms_random.value(100, 200),2);
     y0 := ROUND(dbms_random.value(100, 200),2);
@@ -42,9 +43,9 @@ BEGIN
       k := k + (55.0 + 95.0*dbms_random.value(0, 1)) * pi/180;
       EXIT WHEN n > 5; --jesli wiecej niz 5 wierzcholkow
       INSERT INTO COUNTRY
-      (gid, point_nr, geom_nr, x, y)
+      (gid, geom_nr, x, y)
       VALUES
-      (country_id, n, i, x_coor, y_coor);
+      (country_id, i, x_coor, y_coor);
     END LOOP;
     IF n < 3 THEN
       DBMS_OUTPUT.PUT_LINE('ZA MALA LICZBA WIERZCHOLKOW');

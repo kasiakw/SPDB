@@ -4,7 +4,8 @@ DECLARE
  x_coor NUMBER(5,2);
  y_coor NUMBER(5,2);
 BEGIN
-  dbms_random.initialize(681457777);
+  dbms_random.initialize(681457777); -- I zestaw danych
+  -- dbms_random.initialize(867563912); -- II zestaw danych
   FOR i IN 1 .. 50000 LOOP 
     x_coor := ROUND(dbms_random.value(0, 200),2);
     y_coor := ROUND(dbms_random.value(0, 200),2);

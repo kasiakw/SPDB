@@ -5,7 +5,8 @@ DECLARE
  endX NUMBER(5,2);
  endY NUMBER(5,2);
 BEGIN
-  dbms_random.initialize(681457888);
+  dbms_random.initialize(681457888); -- I zestaw danych
+  -- dbms_random.initialize(863238236); -- II zestaw danych
   FOR i IN 1 .. 50000 LOOP
     startX := ROUND(dbms_random.value(0, 200),2);
     startY := ROUND(dbms_random.value(0, 200),2);

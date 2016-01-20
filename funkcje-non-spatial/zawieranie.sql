@@ -42,10 +42,8 @@ BEGIN
       RETURN res;     
 END;
 
-/* Zwraca 1, jesli obiekt o id o_id znajduje siê wewnatrz wielokata o numerze g_nr,
+/* Zwraca 1, jesli wielokat o geom_nr o_id znajduje siê wewnatrz wielokata o numerze g_nr,
 w przeciwnym wypadku zwraca 0.
-Obiektem zawieranym mo¿e byæ odcinek (type = 0) lub inny wielokat (otype = 1).
-Dla odcinków o_id to gid z tabeli RIVER, zaœ dla wielokatow o_id to geom_nr z tabeli COUNTRY.
 Zaklada sie, ze wielokaty sa wypukle, dlatego procedura polega na
 sprawdzeniu zawierania wierzcholkow wewnatrz wielokata (funkcja zawiera_punkt)
 */
@@ -104,6 +102,11 @@ BEGIN
       RETURN res;     
 END;
 
+/* Zwraca 1, jesli odcinek o id o_id znajduje siê wewnatrz wielokata o numerze g_nr,
+w przeciwnym wypadku zwraca 0.
+Zaklada sie, ze wielokaty sa wypukle, dlatego procedura polega na
+sprawdzeniu zawierania punktów pierwszego oraz koñcowego odcinka wewnatrz wielokata (funkcja zawiera_punkt)
+*/
 SET SERVEROUTPUT ON
 CREATE OR REPLACE FUNCTION zawiera_odcinek
    (g_nr IN NUMBER, o_id IN NUMBER) 
@@ -130,16 +133,14 @@ BEGIN
       select y1 into y11 from river where gid = o_id;
       select x2 into x22 from river where gid = o_id;
       select y2 into y22 from river where gid = o_id;
-
-        
+       
       n_out :=  x1_coords.COUNT;
       
       j :=  n_out;
       flaga := FALSE;
       x_point := x11;
       y_point := y11;        
-      res := 1;
-        
+      res := 1;        
       -- dla kazdego punktu wielokata zawierajacego
       FOR i IN 1 .. n_out LOOP
         IF
@@ -160,8 +161,7 @@ BEGIN
       flaga := FALSE;
       x_point := x22;
       y_point := y22;        
-      res := 1;
-        
+      res := 1;        
       -- dla kazdego punktu wielokata zawierajacego
       FOR i IN 1 .. n_out LOOP
         IF
@@ -190,7 +190,7 @@ where  ur.name = 'ZAWIERA_PUNKT';
 
 select *
 from   user_errors ur
-where  ur.name = 'ZAWIERA_OBIEKT';
+where  ur.name = 'ZAWIERA_WIELOKAT';
 
 select *
 from   user_errors ur
